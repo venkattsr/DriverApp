@@ -16,13 +16,19 @@ const firebaseConfig = {
   appId: "1:400538050452:web:cea8e0cdfb34877b7cb981",
 };
 
+import { Platform } from "react-native";
+
 let app, auth;
 
 if (getApps().length === 0) {
   app = initializeApp(firebaseConfig);
-  auth = initializeAuth(app, {
-    persistence: getReactNativePersistence(AsyncStorage),
-  });
+  if (Platform.OS === "web") {
+    auth = getAuth(app);
+  } else {
+    auth = initializeAuth(app, {
+      persistence: getReactNativePersistence(AsyncStorage),
+    });
+  }
 } else {
   app = getApp();
   auth = getAuth(app);
