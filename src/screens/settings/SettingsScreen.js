@@ -8,6 +8,7 @@ import {
     Text,
     TouchableOpacity,
     View,
+    Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -80,7 +81,22 @@ export default function SettingsScreen({ navigation }) {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    if (Platform.OS === "web") {
+      if (window.confirm("Are you sure you want to sign out?")) {
+        setLoggingOut(true);
+        try {
+          await logoutDriver();
+          clearAuth();
+        } catch {
+          Toast.show({ type: "error", text1: "Failed to sign out" });
+        } finally {
+          setLoggingOut(false);
+        }
+      }
+      return;
+    }
+
     Alert.alert("Sign Out", "Are you sure you want to sign out?", [
       { text: "Cancel", style: "cancel" },
       {
